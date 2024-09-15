@@ -1,56 +1,45 @@
-import React from 'react'
+import Product from '../Product/Product.jsx';
+import { useState } from 'react'
 import './Products.css';
 
-class Products extends React.Component {
-    constructor(props) {
-        super(props);
-        this.decreaseQuantity = this.decreaseQuantity.bind(this);
-        this.increaseQuantity = this.increaseQuantity.bind(this);
-        this.state = {
-            products: this.props.products_list
-        }
+function Products(props) {
 
+    const [products, setPraducts] = useState(props.products_list);
+
+    function handleProductStateChange(changedProduct) {
+        const newArr = products.map(product => {
+            if (product.id === changedProduct.id) {
+                return {
+                    ...product,
+                    total_price: changedProduct.total_price,
+                    quantity: changedProduct.quantity
+                }
+            } else {
+                return product;
+            }
+        })
+        // console.log(newArr);
+        setPraducts([...newArr]);
+        // Products not updated ????
+        // console.log(products)
     }
 
-    decreaseQuantity(product) {
-        if (product.quantity <= 1) return;
-        product.quantity = --product.quantity;
-        product.total_price = parseFloat((product.price * product.quantity).toFixed(2));
-        this.setState({ products: this.state.products })
-        console.log(product);
-    }
 
-    increaseQuantity(product) {
-        product.quantity = ++product.quantity;
-        product.total_price = parseFloat((product.price * product.quantity).toFixed(2));
-        this.setState({ products: this.state.products })
-        console.log(product, 'Product');
-    }
-
-    render() {
-        return (
-            <div className="produsts">
-                <h1>Products</h1>
-                <div className="products-list">
-                    {
-                        this.state.products.map((product) => {
-                            return (<div className="product-item">
-                                <img src={product.image} alt="Product 1" />
-                                <h5>{product.title}</h5>
-                                <div className="price">${product.total_price}</div>
-                                <div className="quantity-control">
-                                    <button className="decrease-btn" onClick={() => this.decreaseQuantity(product)}>-</button>
-                                    <span id="quantity">{product.quantity}</span>
-                                    <button className="increase-btn" onClick={() => this.increaseQuantity(product)}>+</button>
-                                </div>
-                            </div>
-                            )
-                        })
-                    }
-                </div>
+    return (
+        <div className="produsts">
+            <h1>Products</h1>
+            <div className="products-list">
+                {
+                    products.map((product) => {
+                        return (
+                            <Product key={product.id} product={product} onStateChange={handleProductStateChange} />
+                        )
+                    })
+                }
             </div>
-        )
-    }
+        </div>
+    )
+
 }
 
 export default Products
